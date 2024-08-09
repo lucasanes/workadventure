@@ -41,8 +41,7 @@
       token = tokenParam
     }
 
-    setInterval(() => {
-        
+    function validateToken(token: string) {
       if (token) {
         fetch("https://devcalendar-api.eumedicoresidente.com.br/api/users/me", {
           method: 'GET',
@@ -56,6 +55,12 @@
             window.location.href = "https://strapi.kaualf.com"
           } else {
             localStorage.setItem("workadventure@authToken", token)
+
+            response.json().then((data) => {
+              if (!data.email.includes("eumedicoresidente.com.br")) {
+                setTimeout(() => validateToken(token), 30000)
+              }
+            })
           }
         })
         .catch((err) => {
@@ -66,8 +71,11 @@
       } else {
         window.location.href = "https://strapi.kaualf.com"
       }
+    }
 
-    }, 20000);
+    if (token) {
+      validateToken(token)
+    }
 
     /**
      * When changing map from an exit on the current map, the Chat and the MainLayout are not really destroyed
