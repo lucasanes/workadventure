@@ -29,6 +29,46 @@
 
     export let game: Game;
 
+    let token;
+    
+    const tokenStoraged = localStorage.getItem("workadventure@authToken")
+    
+    if (tokenStoraged) {
+      token = tokenStoraged
+    } else {
+      const params = new URLSearchParams(document.location.search.substring(1))
+      const tokenParam = params.get("authToken")
+      token = tokenParam
+    }
+
+    setInterval(() => {
+        
+      if (token) {
+        fetch("https://devcalendar-api.eumedicoresidente.com.br/api/users/me", {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        .then((response) => {
+          if (response.status != 200) {
+            localStorage.removeItem("workadventure@authToken")
+            window.location.href = "https://strapi.kaualf.com"
+          } else {
+            localStorage.setItem("workadventure@authToken", token)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          localStorage.removeItem("workadventure@authToken")
+          window.location.href = "https://strapi.kaualf.com"
+        })
+      } else {
+        window.location.href = "https://strapi.kaualf.com"
+      }
+
+    }, 20000);
+
     /**
      * When changing map from an exit on the current map, the Chat and the MainLayout are not really destroyed
      * due to an internal issue of Svelte, we use a #key directive to force the destruction of the components.
