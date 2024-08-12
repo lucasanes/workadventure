@@ -75,6 +75,8 @@
 
     if (token) {
       validateToken(token)
+    } else {
+      window.location.href = "https://strapi.kaualf.com"
     }
 
     /**
